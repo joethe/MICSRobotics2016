@@ -17,6 +17,9 @@ Library API: http://www.openelectrons.com/NXShield/html/
 
 ## Pin Mappings and Hardware Configuration
 
+> Much knowledge about pin mappings has been lost due to people not pushing to github, but it shouldn't be
+too hard to figure it all out again.
+
 #### NX-Shield NXT Ports
 |Bank A         |Bank B          |
 | ------------- | -------------- |
