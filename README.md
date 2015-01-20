@@ -20,9 +20,21 @@ Library API: http://www.openelectrons.com/NXShield/html/
 #### NX-Shield NXT Ports
 |Bank A         |Bank B          |
 | ------------- | -------------- |
-|front-right (1)| front-left (1) |
-|back-right (2) | back-left (2)  |
+|front-right (Motor 1)| front-left (Motor 1) |
+|back-right (Motor 2) | back-left (Motor 2)  |
+|Sonar A (Sensor 2)   | Sonar B (Sensor 1)   |
+|                     | Rear Sonar (Sensor 2)|
 
 #### Arduino Pins
+|Thing          |Pin             |
+|---------------|----------------|
+|Serial LCD     |9 (Digital)     |
+|H-Bridge pin 1 | ?              |
+|H-Bridge pin 2 | ?              |
+|H-Bridge pin 3 | ?              |
+|H-Bridge pin 4 | ?              |
+|Speaker        | ?              |
+|Front Rollers  | ?              |
+
 
 
