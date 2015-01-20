@@ -17,3 +17,13 @@ Library API: http://www.openelectrons.com/NXShield/html/
 
 ## Pin Mappings and Hardware Configuration
 
+#### NX-Shield NXT Ports
+|Bank A         |Bank B          |
+|---------------|----------------|
+|front-right (1)| front-left (1) |
+|---------------|----------------|
+|back-right (2) | back-left (2)  |
+
+#### Arduino Pins
+
+
