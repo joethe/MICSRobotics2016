@@ -1,7 +1,7 @@
-Robotics2014
+~~Robotics 2014~~ Robotics 2015
 ============
 
-This Repo is for the MICS 2014 Robotics compitition
+This Repo is for the MICS ~~2014~~ 2015 Robotics compitition
 
 This year our team tried to use an arduino with the NXShield created by OpenElectionics.
 A user guide can be found here: http://www.openelectrons.com/index.php?module=documents&JAS_DocumentManager_op=viewDocument&JAS_Document_id=1, as well as an advanced guide and a tutorial.
@@ -15,4 +15,5 @@ NXShield Library download: http://sourceforge.net/projects/nxshield/files/. _Not
 
 Library API: http://www.openelectrons.com/NXShield/html/
 
+## Pin Mappings and Hardware Configuration
 
