@@ -26,18 +26,18 @@ too hard to figure it all out again.
 |front-right (Motor 1)| front-left (Motor 1) |
 |back-right (Motor 2) | back-left (Motor 2)  |
 |Sonar A (Sensor 2)   | Sonar B (Sensor 1)   |
-|                     | Rear Sonar (Sensor 2)|
+|Chain limit switches (Sensor 1)| Rear Sonar (Sensor 2)|
 
 #### Arduino Pins
 |Thing          |Pin             |
 |---------------|----------------|
-|Serial LCD     |9 (Digital)     |
-|H-Bridge pin 1 | ?              |
-|H-Bridge pin 2 | ?              |
-|H-Bridge pin 3 | ?              |
-|H-Bridge pin 4 | ?              |
-|Speaker        | ?              |
-|Front Rollers  | ?              |
+|Serial LCD     |~~9~~ 8 (Digital)     |
+|H-Bridge pin 1 |13              |
+|H-Bridge pin 2 |11              |
+|H-Bridge pin 3 |10              |
+|H-Bridge pin 4 |9               |
+|Speaker        |6               |
+|Front Rollers  |5               |
 
 
 
