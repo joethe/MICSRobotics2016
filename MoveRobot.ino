@@ -635,6 +635,14 @@ void elevatorPassiveStop() {
  digitalWrite(q4, LOW);
 }
 
+void elevatorBrake() {
+ digitalWrite(q1, HIGH);
+ digitalWrite(q2, LOW);
+ digitalWrite(q3, HIGH);
+ digitalWrite(q4, LOW);
+}
+
+// DEPRECATED DO NOT USE WITH CURRENT H-BRIDGE SETUP.
 //void elevatorSuddenStop() {
 // digitalWrite(q1, HIGH);
 // digitalWrite(q2, HIGH);
