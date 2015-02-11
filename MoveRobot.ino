@@ -395,7 +395,7 @@ void approachHoop() {
   delay(500);
   
   moveForward(50);
-  while(sonarBack.getDist() < 58) { 
+  while(sonarBack.getDist() < 60) { 
   }
   
   clearDisplay();
