@@ -186,8 +186,9 @@ if(nxshield.getButtonState(BTN_RIGHT)){
 //    lcd.print(gyroSensor.gz);
 
 //  }
-    findCenter(2);
+    
     approachHoop();
+    findCenter(2);
     takeAShot();
 
 //approachHoop();\
@@ -387,6 +388,10 @@ void approachHoop() {
   clearDisplay();
   lcd.write("approachHoop()");
   
+  if(abs(sonarA.getDist() - sonarB.getDist()) > 6){
+    findCenter(3);
+  }
+  
   delay(500);
   
   moveForward(50);
@@ -395,9 +400,7 @@ void approachHoop() {
   
   clearDisplay();
   stopMoving();
-  if(abs(sonarA.getDist() - sonarB.getDist()) > 6){
-    findCenter(3);
-  }
+
 }
 
 // a really silly method that just moves the thing left. hopefully. 
