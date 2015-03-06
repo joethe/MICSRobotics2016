@@ -25,8 +25,13 @@ too hard to figure it all out again.
 | --------------------------------- | ----------------------------------- |
 | Motor 1: Mal (back left)          | Motor 1: Jayne (front left)         |
 | Motor 2: Simon (back right)       | Motor 2: Wash (front right)         |
-| Sensor 1: Multiplexor (Sensor 1)  | Sensor 1: River (US, right)         |
+| Sensor 1: Multiplexor             | Sensor 1: River (US, right)         |
 | Sensor 2: Lawrence (US, left)     | Sensor 2: Fanty (IR, rear facing)   |
+
+| Multiplexor            | 
+| ---------------------- |
+| Motor 1: Inara (chain) |
+| Motor 2: Mal (chain)   |
 
 #### Arduino Pins
 |Thing          |Pin             |
