@@ -21,12 +21,12 @@ Library API: http://www.openelectrons.com/NXShield/html/
 too hard to figure it all out again.
 
 #### NX-Shield NXT Ports
-|Bank A         |Bank B          |
-| ------------- | -------------- |
-|front-right (Motor 1)| front-left (Motor 1) |
-|back-right (Motor 2) | back-left (Motor 2)  |
-|Sonar A (Sensor 2)   | Sonar B (Sensor 1)   |
-|Chain limit switches (Sensor 1)| Rear Sonar (Sensor 2)|
+|Bank A                             | Bank B                              |
+| --------------------------------- | ----------------------------------- |
+| Motor 1: Mal (back left)          | Motor 1: Jayne (front left)         |
+| Motor 2: Simon (back right)       | Motor 2: Wash (front right)         |
+| Sensor 1: Multiplexor (Sensor 1)  | Sensor 1: River (US, right)         |
+| Sensor 2: Lawrence (US, left)     | Sensor 2: Fanty (IR, rear facing)   |
 
 #### Arduino Pins
 |Thing          |Pin             |
