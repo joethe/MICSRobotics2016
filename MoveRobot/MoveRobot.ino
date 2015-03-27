@@ -46,7 +46,7 @@ NXTMMX      mmx(0x0A); // Multiplexer for chain morors
 //NXTTouch    touchSensor; // used for chain endstops
 
 // 2 line LCD on arduino digital pin #6
-SoftwareSerial lcd(2, 6);
+SoftwareSerial lcd(2, 5);
 
 //
 // Config Values and loop tuneing.

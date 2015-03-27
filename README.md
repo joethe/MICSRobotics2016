@@ -28,7 +28,7 @@ too hard to figure it all out again.
 | Sensor 1: Multiplexor             | Sensor 1: River (US, right)         |
 | Sensor 2: Lawrence (US, left)     | Sensor 2: Fanty (IR, rear facing)   |
 
-| Multiplexor            | 
+| Multiplexer            | 
 | ---------------------- |
 | Motor 1: Inara (chain) |
 | Motor 2: Mal (chain)   |
@@ -36,13 +36,25 @@ too hard to figure it all out again.
 #### Arduino Pins
 |Thing          |Pin             |
 |---------------|----------------|
-|Serial LCD     |~~9~~ 8 (Digital)     |
-|H-Bridge pin 1 |13              |
-|H-Bridge pin 2 |11              |
-|H-Bridge pin 3 |10              |
-|H-Bridge pin 4 |9               |
+|Serial LCD     |~~9~~ ~~8~~ 5 (Digital)     |
 |Speaker        |6               |
-|Front Rollers  |5               |
+
+#### Dianostics Mode
+The robot has a basic diagnostics and troubleshooting mode which constantly prints out all sensor
+values to the LCD, as well as allowing manual control of the chain motors.
+
+To enter diagnostics mode, power on the robot. Upon seeing the voltage readout message, or a
+message instructing you to press go, hold the "Right arrow" button on the shield. While holding the right arrow button, press the "go" button. Release both buttons.
+
+To exit diagnostics mode, reset the arduino or power cycle the whole bot.
+
+Controls within diagnostics mode:
+| Button | Function |
+| ------ | -------- |
+| Right arrow | Lower the chain |
+| Left arrow | Raise the chain |
+
+
 
 
 
