@@ -28,6 +28,7 @@
 #include <Wire.h>
 #include <NXShield.h>
 #include <NXTUS.h>
+#include <NXTMMX.h>
 
 #include <SoftwareSerial.h>
 //Don't make # symbols
@@ -35,24 +36,17 @@
 // The shield
 NXShield nxshield;
 
-// 2 line LCD on arduino digital pin #8
-SoftwareSerial lcd(2, 8);
-
-// Elevator H-Bridge control pins
-// Not using these?
-int q1 = 13;
-int q2 = 11;
-int q3 = 10;
-int q4 = 9;
-
 //
 // Declare the i2c devices used on NXShield(s).
 //
 NXTUS       sonarLeft; // left
 NXTUS       sonarRight; // right
 NXTUS       sonarBack;
-//NXTMMX      mmx; // Multiplexer for chain morors
+NXTMMX      mmx(0x0A); // Multiplexer for chain morors
 //NXTTouch    touchSensor; // used for chain endstops
+
+// 2 line LCD on arduino digital pin #6
+SoftwareSerial lcd(2, 6);
 
 //
 // Config Values and loop tuneing.
@@ -61,7 +55,11 @@ int updateDelay = 50; // X ms sensor / screen update time
 int nudgeTime = 180; // oifnviownerfvwwefvpinm
 int scanSpeed = 50;
 int scanSideDist = 7; 
-boolean cornerScan = false;
+
+
+///
+/////////// SETUP /////////////////////////////////////////////// 
+///
 
 void setup(){
   Serial.begin(115200);
@@ -71,12 +69,6 @@ void setup(){
   delay(500);
   
   pinMode(6, OUTPUT);
-  pinMode(5, OUTPUT);
-  
-  pinMode(q1, OUTPUT);
-  pinMode(q2, OUTPUT);
-  pinMode(q3, OUTPUT);
-  pinMode(q4, OUTPUT);
   
   nxshield.init(SH_HardwareI2C);
   
@@ -119,7 +111,7 @@ if(nxshield.getButtonState(BTN_RIGHT)){
    int rightUS = sonarRight.getDist();
    int leftUS = sonarLeft.getDist();
    //boolean endStops = touchSensor.isPressed();
-   while(!nxshield.getButtonState(BTN_RIGHT)){
+   while(true){
      delay(updateDelay);
      backUS = sonarBack.getDist();
      rightUS = sonarLeft.getDist();
@@ -137,33 +129,43 @@ if(nxshield.getButtonState(BTN_RIGHT)){
      lcd.print("NA");
      
      if(nxshield.getButtonState(BTN_RIGHT)){
-       //chain up
+       elevatorRaise(100);
      }else if(nxshield.getButtonState(BTN_LEFT)){
-       //chain down
+       elevatorLower(100);
      }else {
-       //chain stop  
+       elevatorPassiveStop();
      } 
    }
     
 }
     
  //   approachHoop();
-  //  findCenter(2);
+ //  findCenter(2);
  //   takeAShot();
 
   
 } // end setup
 
-//
-// Main Loop!
-//
+///
+/////////// LOOP /////////////////////////////////////////////// 
+///
+
 void loop(){
-  scan(5, 1);
+  clearDisplay();
+  lcd.print("Looping");
+  delay(1000);
+  lcd.print(".");
+  delay(1000);
+  lcd.print(".");
+  delay(1000);
+  lcd.print(".");
+  delay(1000);
 }
 
-//
-///////////// Helper Functions
-//
+
+///
+/////////// Helper Functions /////////////////////////////////////////////// 
+///
 
 // Activates the noise maker
 void beep() {
@@ -172,9 +174,8 @@ void beep() {
  digitalWrite(6, LOW); 
 }
 
-// CAUTION. DO NOT ACTIVATE RED PIN OF THE LIGHT. LCD IS USING THAT PIN FOR SERIAL COMMUNICATION.
 void coloryLights(){
-  //nxshield.ledSetRGB(8,0,0); // guessing that this is the red pin...
+  nxshield.ledSetRGB(8,0,0); // guessing that this is the red pin...
   delay(1000);
   nxshield.ledSetRGB(0,8,0);
   delay(1000);
@@ -189,7 +190,7 @@ void coloryLights(){
 // ballThresh - the threshold (~cm) of sudden distance change that will trigger a ball found state.
 // sideDist - the distance (~cm) from the sides of the field that the robot will maintain while scanning.
 
-
+/**
 void scan(int dist, int backThresh) {
   findCenter(3);
   approachBackWall(dist, backThresh);
@@ -200,31 +201,9 @@ void scan(int dist, int backThresh) {
   int sensorCount = 0;
   int scanCount = 0;
   boolean  foundBall = false;
-  cornerScan = false;
   
   while(!foundBall){
     scanCount++; 
-    if(scanCount > 2){
-       cornerScan = true;
-    } else {
-      cornerScan = false;
-    }
-    
-    if(cornerScan){
-       frontWheelsGo();
-       moveBackward(30);
-       delay(2000);
-       stopMoving();
-       strafeLeft(30);
-       delay(2000);
-       stopMoving();
-       moveForward(30);
-       delay(2000);
-       stopMoving(); 
-       frontWheelsStop();
-       
-       scanCount = 0;
-     }
     
     alignLeft(dist, scanSideDist, backThresh);
     distSum = 0;
@@ -271,21 +250,20 @@ void scan(int dist, int backThresh) {
   
   //void alignLeft(int backDist, int sideDist, int backThresh)
 }
+*/
 
 
 // Moves forward and grabs a ball (assumes ball is there...)
 
+/**
 void grabBall(int speed) {
  stopMoving();
  delay(100);
- nudgeElevatorDown(300);
  moveBackward(speed);
  delay(2500);
  stopMoving();
  delay(100);
  moveForward(20);
- delay(500);
- nudgeElevatorUp(400);
  delay(100);
  moveBackward(30);
  delay(1500);
@@ -294,25 +272,17 @@ void grabBall(int speed) {
  stopMoving(); 
  //approachHoop();
  }
+**/
  
 
 // Takes a shot.
 void takeAShot(){
   beep();
-  elevatorRaise();
-//  while(!touchSensor.isPressed()){
-//    lcd.write("Kobe!");
-//  }
-  elevatorPassiveStop();
-  delay(500);
-  elevatorReadyPosition();
-  delay(200);
-  moveBackward(40);
-  delay(1000);
   stopMoving();
   clearDisplay();
 }
 
+/**
 // moves the bot to within dist cm, give of take thresh cm, of the back wall
 void approachBackWall(int dist, int thresh) {
   clearDisplay();
@@ -338,7 +308,9 @@ void approachBackWall(int dist, int thresh) {
   stopMoving();
   clearDisplay();
 }
+*/
 
+/*
 // centers the robot, and then moves forward till the bot is ~62cm from the hoop wall.
 void approachHoop() {
   //findCenter(3);
@@ -358,7 +330,9 @@ void approachHoop() {
   clearDisplay();
   stopMoving();
 }
+**/
 
+/**
 // a really silly method that just moves the thing left. hopefully. 
 void alignLeft(int backDist, int sideDist, int backThresh){
  clearDisplay();
@@ -397,6 +371,9 @@ void alignLeft(int backDist, int sideDist, int backThresh){
 //    delay(100);
 //    approachBackWall(backDist, 3);
 //  }
+**/
+
+/**
  }
  delay(1000);
  stopMoving();
@@ -416,7 +393,9 @@ void alignLeft(int backDist, int sideDist, int backThresh){
    approachBackWall(backDist, 3);
    clearDisplay();
 }
+**/
 
+/**
 // centers the robot left / right on the field
 void findCenter(int threshold) {
   int distA = sonarLeft.getDist();
@@ -448,7 +427,9 @@ void findCenter(int threshold) {
   clearDisplay();
   stopMoving();
 }
+**/
 
+/**
 void breakTime(){
   approachHoop();
   findCenter(3);
@@ -458,6 +439,7 @@ void breakTime(){
   delay(2000);
   clearDisplay();
 }
+**/
 
 
 /////////////////////////// MOVEMENT COMMANDS //////////////////////////
@@ -526,106 +508,34 @@ diagonal(){
   
 }
 
-void nudgeElevatorUp(){
-  elevatorRaise();
-  delay(nudgeTime);
-  elevatorPassiveStop(); 
-}
-
-void nudgeElevatorUp(int n){
- elevatorRaise();
- delay(n);
- elevatorPassiveStop();
-}
-
-void nudgeElevatorDown(){
-  elevatorLower();
-  delay(nudgeTime);
-  elevatorPassiveStop();
-}
-
-void nudgeElevatorDown(int n){
-  elevatorLower();
-  delay(n);
-  elevatorPassiveStop();
-}
-
-void elevatorReadyPosition(){
-  elevatorRaise();
- // while(!touchSensor.isPressed()){
-  //}
-  nudgeElevatorDown();
-  delay(200);
-  elevatorLower();
- // while(!touchSensor.isPressed()){
-  //}
-  nudgeElevatorUp(300);
-  elevatorPassiveStop(); 
-}
-
-void frontWheelsStop(){
-  digitalWrite(5, LOW);
-}
-
-void frontWheelsGo(){
-  digitalWrite(5, HIGH);  
-}
 
 
 ///////////////////////////// ELEVATOR COMMANDS ////////////////////////////
-void elevatorRaise() {
- digitalWrite(q1, LOW);
- digitalWrite(q2, HIGH);
- digitalWrite(q3, HIGH);
- digitalWrite(q4, LOW);
-}
 
-void elevatorLower() {
- digitalWrite(q1, HIGH);
- digitalWrite(q2, LOW);
- digitalWrite(q3, LOW);
- digitalWrite(q4, HIGH);
-}
-
-void elevatorPassiveStop() {
- digitalWrite(q1, LOW);
- digitalWrite(q2, LOW);
- digitalWrite(q3, LOW);
- digitalWrite(q4, LOW);
-}
-
-void elevatorBrake() {
- digitalWrite(q1, HIGH);
- digitalWrite(q2, LOW);
- digitalWrite(q3, HIGH);
- digitalWrite(q4, LOW);
-}
-
-/*
-void elevatorLower(int speed1, long rotations) {
+void elevatorLower_Rotations(int speed1, long rotations) {
   mmx.runRotations(MMX_Motor_1, MMX_Direction_Forward, speed1, rotations, MMX_Completion_Dont_Wait, MMX_Next_Action_Float);
   mmx.runRotations(MMX_Motor_2, MMX_Direction_Reverse, speed1, rotations, MMX_Completion_Dont_Wait, MMX_Next_Action_Float); 
 }
 
-void elevatorRaise(int speed1, long rotations) {
+void elevatorRaise_Rotations(int speed1, long rotations) {
   mmx.runRotations(MMX_Motor_1, MMX_Direction_Reverse, speed1, rotations, MMX_Completion_Dont_Wait, MMX_Next_Action_Float);
   mmx.runRotations(MMX_Motor_2, MMX_Direction_Forward, speed1, rotations, MMX_Completion_Dont_Wait, MMX_Next_Action_Float); 
+}
+
+void elevatorLower(int speed1){
+  mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Forward, speed1); 
+  mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Reverse, speed1);
+}
+
+void elevatorRaise(int speed1){
+  mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Reverse, speed1); 
+  mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Forward, speed1);
 }
 
 void elevatorPassiveStop() {
   mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
   mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
 }
-*/
-
-// DEPRECATED DO NOT USE WITH CURRENT H-BRIDGE SETUP.
-//void elevatorSuddenStop() {
-// digitalWrite(q1, HIGH);
-// digitalWrite(q2, HIGH);
-// digitalWrite(q3, HIGH);
-// digitalWrite(q4, HIGH);
-//}
-
 
 ///////////////////////////// LCD COMMANDS //////////////////////////////
 void clearDisplay() {
