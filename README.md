@@ -49,6 +49,7 @@ message instructing you to press go, hold the "Right arrow" button on the shield
 To exit diagnostics mode, reset the arduino or power cycle the whole bot.
 
 Controls within diagnostics mode:
+
 | Button | Function |
 | ------ | -------- |
 | Right arrow | Lower the chain |
