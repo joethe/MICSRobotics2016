@@ -36,7 +36,7 @@
 //
 // Config Values
 //
-const int HOOP_DIST = 60;
+const int HOOP_DIST = 50;
 const int UPDATE_DELAY = 50;
 const int SCAN_SPEED = 50;
 const int SCAN_SIDE_DIST = 7;
@@ -144,11 +144,15 @@ void setup(){
     
   } // end diagnostics mode
   
-  elevatorRaise_Degrees(40, 180);
-    
- //   approachHoop();
- //  findCenter(2);
- //   takeAShot();
+  moveForward(50);
+  delay(500);
+  stopMoving();
+  
+  elevatorRaise_Degrees(30, 180);
+
+   findCenter(2);
+   approachHoop();
+   takeAShot();
  
   clearDisplay();
 } // end setup
@@ -231,8 +235,8 @@ void grabBall(int speed) {
  delay(100);
  moveForward(20);
  delay(500);
- elevatorRaise_Degrees(50, 180);
- delay(200);
+ elevatorRaise_Degrees(20, 180);////
+ delay(1000);//
  moveBackward(30);
  delay(1500);
  moveForward(50);
