@@ -3,8 +3,8 @@
 
 This Repo is for the MICS 2016 robotics compitition
 
-This year our team tried to use an arduino with the NXShield created by OpenElectionics.
-A user guide can be found here: http://www.openelectrons.com/index.php?module=documents&JAS_DocumentManager_op=viewDocument&JAS_Document_id=1, as well as an advanced guide and a tutorial.
+This year our team is using an arduino with the NXShield created by OpenElectionics, as well as a Raspberry Pi.
+A user guide for the NXShield can be found here: http://www.openelectrons.com/index.php?module=documents&JAS_DocumentManager_op=viewDocument&JAS_Document_id=1, as well as an advanced guide and a tutorial.
 The user guide contains a lot of useful links, but the key ones can be found below.
 
 ## Links
