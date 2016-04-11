@@ -40,7 +40,7 @@ too hard to figure it all out again.
 |Speaker        |6               |
 
 #### Dianostics Mode
-The robot has a basic diagnostics and troubleshooting mode which constantly prints out all sensor values to the LCD, as well as allowing manual control of the chain motors.
+The robot has a basic diagnostics and troubleshooting mode which can be used to run scripted tests of motors or actions.
 
 To enter diagnostics mode, power on the robot. Upon seeing the voltage readout message, or a
 message instructing you to press go, hold the "Right arrow" button on the shield. While holding the right arrow button, press the "go" button. Release both buttons.
