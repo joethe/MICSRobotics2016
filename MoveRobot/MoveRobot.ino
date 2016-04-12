@@ -51,20 +51,20 @@ SoftwareSerial lcd(2, 5);
 
 
 ///
-/////////// SETUP /////////////////////////////////////////////// 
+/////////// SETUP ///////////////////////////////////////////////
 ///
 
 void setup(){
   Serial.begin(115200);
-  
-  lcd.begin(9600); 
+
+  lcd.begin(9600);
   lcd.print("Setup Starting...");
   delay(500);
-  
+
   pinMode(6, OUTPUT);
-  
+
   nxshield.init(SH_HardwareI2C);
-  
+
   // Check battery voltage on startup. Warn if low.
   float batVolt = (float) nxshield.bank_a.nxshieldGetBatteryVoltage() / 1000;
   if(batVolt < 7.50) {
@@ -81,49 +81,55 @@ void setup(){
     lcd.print("Press GO!");
     setLCDCursor(16);
     lcd.print("voltage: ");
-    lcd.print(batVolt); 
+    lcd.print(batVolt);
   }
-	
-  // TODO: Hook up the big red go button to use in place of this.  
+
+  // TODO: Hook up the big red go button to use in place of this.
   nxshield.waitForButtonPress(BTN_GO);
-  
+
   nxshield.bank_a.motorReset();
   nxshield.bank_b.motorReset();
-  
+
   //
   // Initialize the i2c sensors.
   //
-  
+
   // sensor diagnostic mode.
   if(nxshield.getButtonState(BTN_RIGHT)){
      clearDisplay();
      beep();
      lcd.print("Diagnostic Mode!");
      delay(5000);
-     
+
      while(true){
        delay(UPDATE_DELAY);
-     
+
      }
-    
+
   } // end diagnostics mode
-  
- 
+
+
   clearDisplay();
 } // end setup
 
 ///
-/////////// LOOP /////////////////////////////////////////////// 
+/////////// LOOP ///////////////////////////////////////////////
 ///
 
 void loop(){
-	// TODO: do things in here
+  if(Serial.available()) {
+    d = Serial.read(); // reads in a char from serial.
+
+    // TODO: process commands from Pi.
+
+  }
+
 	motorTest();
 }
 
 
 ///
-/////////// Helper Functions /////////////////////////////////////////////// 
+/////////// Helper Functions ///////////////////////////////////////////////
 ///
 
 void motorTest(){
@@ -131,7 +137,7 @@ void motorTest(){
 	rightDrive(1, 50, 720);
 	delay(2000);
 	leftDrive(0, 50, 720);
-	rightDrive(0, 50, 720);	
+	rightDrive(0, 50, 720);
 }
 
 void breakTime(){
@@ -147,7 +153,7 @@ void breakTime(){
 void beep() {
  digitalWrite(6, HIGH);
  delay(50);
- digitalWrite(6, LOW); 
+ digitalWrite(6, LOW);
 }
 
 void coloryLights(){
@@ -178,20 +184,17 @@ void
 rightDrive(int direction, int speed, long deg){
 	if(direction){
   		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait);
-  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait); 
+  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait);
 	} else {
   		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait);
-  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait); 
+  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait);
 	}
 }
 
-
-// This probably isn't needed anymore...
+// Forces all motors to stop.
 void
 stopMoving(){
-//  nxshield.bank_a.motorStop(SH_Motor_Both, SH_Next_Action_Float);
-//  nxshield.bank_b.motorStop(SH_Motor_Both, SH_Next_Action_Float);
-  nxshield.bank_a.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, SH_Next_Action_Brake);
   nxshield.bank_b.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
@@ -199,11 +202,11 @@ stopMoving(){
 ///////////////////////////// LCD COMMANDS //////////////////////////////
 void clearDisplay() {
   lcd.write(0xFE);
-  lcd.write(0x01); 
+  lcd.write(0x01);
 }
 
 void setLCDCursor(byte cursor_position){
  lcd.write(0xFE); // ready LCD for special command
  lcd.write(0x80); // ready LCD to recieve cursor potition
- lcd.write(cursor_position); // send cursor position 
+ lcd.write(cursor_position); // send cursor position
 }
