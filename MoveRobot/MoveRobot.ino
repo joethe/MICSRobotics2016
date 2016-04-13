@@ -28,10 +28,14 @@
 #include <Wire.h>
 #include <NXShield.h>
 #include <NXTUS.h>
-#include <NXTMMX.h>s
+#include <NXTMMX.h>
 
 #include <SoftwareSerial.h>
 //Don't make # symbols
+
+char buffer [32];
+int bIndex = 0;
+boolean ready = false;
 
 //
 // Config Values
@@ -59,6 +63,7 @@ void setup(){
 
   lcd.begin(9600);
   lcd.print("Setup Starting...");
+  Serial.print("Setup Starting...");
   delay(500);
 
   pinMode(6, OUTPUT);
@@ -109,11 +114,10 @@ void setup(){
   } // end diagnostics mode
 
 
+  Serial.print("Setup Complete...");
   clearDisplay();
 
-  char buffer [32];
-  int bIndex = 0;
-  boolean ready = false;
+
 } // end setup
 
 ///
@@ -121,6 +125,7 @@ void setup(){
 ///
 
 void loop(){
+  
   if(ready){
     processCommand();
     ready = false;
@@ -129,13 +134,14 @@ void loop(){
         char c = Serial.read();
         buffer[bIndex++] = c;
 
-        if ((c == '\n') || (bIndex == sizeOf(buffer) - 1)){
-          buffer[bIndex] = "\0";
+        if ((c == '\n') || (bIndex == sizeof(buffer) - 1)){
+          buffer[bIndex] = '\0';
           bIndex = 0;
           ready = true;
         }
       }
   }
+  
 }
 
 
@@ -144,43 +150,47 @@ void loop(){
 ///
 
 void processCommand(){
-  char *cmd;
-  char *direction;
-  char *speed;
-  char *degrees;
+  //char *cmd;
+  //char *direction;
+  //char *speed;
+  //char *degrees;
+  String cmd;
+  String dir;
+  String spd;
+  String deg;
+  
+  Serial.print("Processing Command:");
+  Serial.print(buffer);
+  
+  cmd = strtok(buffer, " ");
+  spd = strtok(NULL, " ");
+  deg = strtok(NULL, " ");
+  dir = strtok(NULL, " ");
+  
+  int spd_ = spd.toInt();
+  long deg_ = StrToFloat(deg);
+  int dir_ = dir.toInt();
 
-  cmd = strtok(input, " ");
-  speed = strtok(NULL, " ");
-  degrees = strtok(NULL, " ");
-  direction = strtok(NULL, " ");
-
-  switch(cmd){
-    case "FWD" :
-      forward(atoi(speed), atol(degrees));
-      break;
-    case "REV" :
-      reverse(atoi(speed), atol(degrees));
-      break;
-    case "SPN" :
-      rotate(atoi(direction), atoi(speed), atol(degrees));
-      break;
-    case "HIT" :
+  if(cmd == "FWD"){
+    forward(spd_, deg_);
+  } else if(cmd == "REV"){
+    reverse(spd_, deg_);
+  } else if(cmd == "SPN"){
+    rotate(dir_, spd_, deg_);
+  } else if(cmd == "HIT"){
       clearDisplay();
       lcd.print("No Hitting Yet!");
-      break;
-    case "LFT" :
-      leftDrive(atoi(direction), atoi(speed), atol(degrees));
-      break;
-    case "RHT" :
-      rightDrive(atoi(direction), atoi(speed), atol(degrees));
-      break;
-    case "STP" :
+  } else if(cmd == "LFT"){
+      leftDrive(dir_, spd_, deg_);
+  } else if(cmd == "RHT"){
+      rightDrive(dir_, spd_, deg_);
+  } else if(cmd == "STP"){
       stopMoving();
-      break;
-    default :
+  } else {
       clearDisplay();
       lcd.print("WAT?");
   }
+ 
 }
 
 void motorTest(){
@@ -218,53 +228,60 @@ void coloryLights(){
   delay(1000);
 }
 
+
+float StrToFloat(String str){
+  char carray[str.length() + 1]; //determine size of the array
+  str.toCharArray(carray, sizeof(carray)); //put str into an array
+  return atof(carray);
+}
+
 /////////////////////////// MOVEMENT COMMANDS //////////////////////////
 
 void
-leftDrive(int direction, int speed, long deg){
-	if(direction){
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, speed, deg, SH_Completion_Dont_Wait);
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, speed, deg, SH_Completion_Dont_Wait);
+leftDrive(int dir, int spd, long deg){
+	if(dir){
+  		nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  		nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 	} else {
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, speed, deg, SH_Completion_Dont_Wait);
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, speed, deg, SH_Completion_Dont_Wait);
+  		nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  		nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 	}
 }
 
 void
-rightDrive(int direction, int speed, long deg){
-	if(direction){
-  		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait);
-  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait);
+rightDrive(int dir, int spd, long deg){
+	if(dir){
+  		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
 	} else {
-  		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait);
-  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait);
+  		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
 	}
 }
 
-void rotate(int direction, int speed, long deg){
-  if(direction){ // CW
-    leftDrive(true, speed, deg);
-    rightDrive(false, speed, deg);
+void rotate(int dir, int spd, long deg){
+  if(dir){ // CW
+    leftDrive(true, spd, deg);
+    rightDrive(false, spd, deg);
   } else { // CCW
-    leftDrive(false, direction, speed, deg);
-    rightDrive(true, direction, speed, deg);
+    leftDrive(false, spd, deg);
+    rightDrive(true, spd, deg);
   }
 }
 
 void
-forward(int speed, long deg){
-  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait);
-  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, speed, deg, SH_Completion_Dont_Wait);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, speed, deg, SH_Completion_Dont_Wait);
+forward(int spd, long deg){
+  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
-void reverse(int speed, long deg){
-  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, speed, deg, MMX_Completion_Dont_Wait);
-  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, speed, deg, MMX_Completion_Dont_Wait);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, speed, deg, SH_Completion_Dont_Wait);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, speed, deg, SH_Completion_Dont_Wait);
+void reverse(int spd, long deg){
+  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
 // Forces all motors to stop.
