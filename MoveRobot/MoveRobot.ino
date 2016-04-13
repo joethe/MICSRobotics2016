@@ -110,6 +110,10 @@ void setup(){
 
 
   clearDisplay();
+
+  char buffer [32];
+  int bIndex = 0;
+  boolean ready = false;
 } // end setup
 
 ///
@@ -117,20 +121,67 @@ void setup(){
 ///
 
 void loop(){
-  if(Serial.available()) {
-    d = Serial.read(); // reads in a char from serial.
+  if(ready){
+    processCommand();
+    ready = false;
+  } else {
+      while(Serial.available()){
+        char c = Serial.read();
+        buffer[bIndex++] = c;
 
-    // TODO: process commands from Pi.
-
+        if ((c == '\n') || (bIndex == sizeOf(buffer) - 1)){
+          buffer[bIndex] = "\0";
+          bIndex = 0;
+          ready = true;
+        }
+      }
   }
-
-	motorTest();
 }
 
 
 ///
 /////////// Helper Functions ///////////////////////////////////////////////
 ///
+
+void processCommand(){
+  char *cmd;
+  char *direction;
+  char *speed;
+  char *degrees;
+
+  cmd = strtok(input, " ");
+  speed = strtok(NULL, " ");
+  degrees = strtok(NULL, " ");
+  direction = strtok(NULL, " ");
+
+  switch(cmd){
+    case "FWD" :
+      forward(atoi(speed), atol(degrees));
+      break;
+    case "REV" :
+      reverse(atoi(speed), atol(degrees));
+      break;
+    case "SPN" :
+      rotate(atoi(direction), atoi(speed), atol(degrees));
+      break;
+    case "HIT" :
+      clearDisplay();
+      lcd.print("No Hitting Yet!");
+      break;
+    case "LFT" :
+      leftDrive(atoi(direction), atoi(speed), atol(degrees));
+      break;
+    case "RHT" :
+      rightDrive(atoi(direction), atoi(speed), atol(degrees));
+      break;
+    case "STP" :
+      stopMoving();
+      break;
+    default :
+      clearDisplay();
+      lcd.print("WAT?");
+  }
+}
 
 void motorTest(){
 	leftDrive(1, 50, 720);
@@ -222,7 +273,6 @@ stopMoving(){
   mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, SH_Next_Action_Brake);
   nxshield.bank_b.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
-
 
 ///////////////////////////// LCD COMMANDS //////////////////////////////
 void clearDisplay() {
