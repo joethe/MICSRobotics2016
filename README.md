@@ -3,8 +3,8 @@
 
 This Repo is for the MICS 2016 robotics compitition
 
-This year our team tried to use an arduino with the NXShield created by OpenElectionics.
-A user guide can be found here: http://www.openelectrons.com/index.php?module=documents&JAS_DocumentManager_op=viewDocument&JAS_Document_id=1, as well as an advanced guide and a tutorial.
+This year our team is using an arduino with the NXShield created by OpenElectionics, as well as a Raspberry Pi.
+A user guide for the NXShield can be found here: http://www.openelectrons.com/index.php?module=documents&JAS_DocumentManager_op=viewDocument&JAS_Document_id=1, as well as an advanced guide and a tutorial.
 The user guide contains a lot of useful links, but the key ones can be found below.
 
 ## Links
@@ -40,7 +40,7 @@ too hard to figure it all out again.
 |Speaker        |6               |
 
 #### Dianostics Mode
-The robot has a basic diagnostics and troubleshooting mode which constantly prints out all sensor values to the LCD, as well as allowing manual control of the chain motors.
+The robot has a basic diagnostics and troubleshooting mode which can be used to run scripted tests of motors or actions.
 
 To enter diagnostics mode, power on the robot. Upon seeing the voltage readout message, or a
 message instructing you to press go, hold the "Right arrow" button on the shield. While holding the right arrow button, press the "go" button. Release both buttons.

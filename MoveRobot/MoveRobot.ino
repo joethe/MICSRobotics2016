@@ -117,7 +117,13 @@ void setup(){
 ///
 
 void loop(){
-	// TODO: do things in here
+  if(Serial.available()) {
+    d = Serial.read(); // reads in a char from serial.
+
+    // TODO: process commands from Pi.
+
+  }
+
 	motorTest();
 }
 
@@ -210,13 +216,10 @@ void reverse(int speed, long deg){
   nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, speed, deg, SH_Completion_Dont_Wait);
 }
 
-
-// This probably isn't needed anymore...
+// Forces all motors to stop.
 void
 stopMoving(){
-//  nxshield.bank_a.motorStop(SH_Motor_Both, SH_Next_Action_Float);
-//  nxshield.bank_b.motorStop(SH_Motor_Both, SH_Next_Action_Float);
-  nxshield.bank_a.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, SH_Next_Action_Brake);
   nxshield.bank_b.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
