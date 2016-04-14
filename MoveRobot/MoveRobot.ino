@@ -167,6 +167,9 @@ void processCommand(){
   deg = strtok(NULL, " ");
   dir = strtok(NULL, " ");
   
+  Serial.print("CMD: ");
+  Serial.print(cmd);
+  
   int spd_ = spd.toInt();
   long deg_ = StrToFloat(deg);
   int dir_ = dir.toInt();
@@ -178,13 +181,14 @@ void processCommand(){
   } else if(cmd == "SPN"){
     rotate(dir_, spd_, deg_);
   } else if(cmd == "HIT"){
-      clearDisplay();
-      lcd.print("No Hitting Yet!");
+      hitter(spd_, deg_, dir_);
   } else if(cmd == "LFT"){
       leftDrive(dir_, spd_, deg_);
   } else if(cmd == "RHT"){
       rightDrive(dir_, spd_, deg_);
   } else if(cmd == "STP"){
+      clearDisplay();
+      lcd.print("STOPPING?!?!?");
       stopMoving();
   } else {
       clearDisplay();
@@ -284,11 +288,25 @@ void reverse(int spd, long deg){
   nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
+void
+hitter(int spd, long deg, int dir){
+   	if(dir){
+  		nxshield.bank_a.motorRunDegrees(SH_Motor_Both, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+	} else {
+  		nxshield.bank_a.motorRunDegrees(SH_Motor_Both, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+	}
+}
+
 // Forces all motors to stop.
 void
 stopMoving(){
-  mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, SH_Next_Action_Brake);
-  nxshield.bank_b.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  //mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, SH_Next_Action_Brake);
+  //nxshield.bank_b.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  
+  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, 1, 1, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, 1, 1, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, 1, 1, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, 1, 1, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
 ///////////////////////////// LCD COMMANDS //////////////////////////////
@@ -302,3 +320,4 @@ void setLCDCursor(byte cursor_position){
  lcd.write(0x80); // ready LCD to recieve cursor potition
  lcd.write(cursor_position); // send cursor position
 }
+
