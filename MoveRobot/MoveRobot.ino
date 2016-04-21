@@ -26,6 +26,7 @@
 #include <SoftI2cMaster.h>
 #include <SumoEyes.h>
 #include <Wire.h>
+#include <Servo.h>
 #include <NXShield.h>
 #include <NXTUS.h>
 #include <NXTMMX.h>
