@@ -46,6 +46,9 @@ const int UPDATE_DELAY = 50;
 // The shield
 NXShield nxshield;
 
+//The SERVO with the vision camera on it
+Servo cam;
+
 //
 // Declare the i2c devices used on NXShield(s).
 //
@@ -68,6 +71,8 @@ void setup(){
   delay(500);
 
   pinMode(6, OUTPUT);
+  
+  cam.attach(9);
 
   nxshield.init(SH_HardwareI2C);
 
@@ -125,6 +130,13 @@ void setup(){
 /////////// LOOP ///////////////////////////////////////////////
 ///
 
+//void loop(){
+//  cam.write(125);
+//  delay(2000);
+//  cam.write(90);
+//  delay(2000);
+//
+//}
 void loop(){
   
   if(ready){
@@ -187,6 +199,10 @@ void processCommand(){
       leftDrive(dir_, spd_, deg_);
   } else if(cmd == "RHT"){
       rightDrive(dir_, spd_, deg_);
+  } else if(cmd == "CUP"){//Camera UP
+      cam.write(90);
+  } else if(cmd == "CDN"){//Camera DowN
+      cam.write(125);
   } else if(cmd == "STP"){
       clearDisplay();
       lcd.print("STOPPING?!?!?");
