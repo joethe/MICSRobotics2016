@@ -63,6 +63,7 @@ float batVolt = 420.0; //if you see this printed, some dank shit's going on.
 ///
 
 void setup(){
+  clearDisplay();
   //SERIAL//
   Serial.begin(115200);
   Serial.print("Setup Starting...");
@@ -85,16 +86,11 @@ void setup(){
   // Check battery voltage on startup. Warn if low.
 
 
-  while((digitalRead(3) == HIGH) & (checkBattery())) {
+  while((digitalRead(3) == HIGH) & (!checkBattery())) {
     delay(500);
-    }
+  }
 
-  clearDisplay();
-  lcd.print("Press GO!");
-  setLCDCursor(16);
-  lcd.print("voltage: ");
-  lcd.print(batVolt);
-  delay(500);
+clearDisplay();
 
  // Initialize the i2c sensors.//
  // OK LOL
@@ -102,7 +98,6 @@ void setup(){
  // sensor diagnostic mode. //
   if(nxshield.getButtonState(BTN_RIGHT)){
      clearDisplay();
-     beep();
      lcd.print("Diagnostic Mode!");
      delay(5000);
      while(true){
