@@ -38,10 +38,16 @@ char buffer [32];
 int bIndex = 0;
 boolean ready = false;
 
+int xpos = 0;
+int ypos = 0;
+
 ///////////////////
 // Config Values //
 ///////////////////
 const int UPDATE_DELAY = 50;
+
+const float SPN_DEGS = 0.177;    // Degrees of spin per degree of spin...
+const float MOV_DEGS = 0.0116;   // Inches of movement per degree
 
 // The shield
 NXShield nxshield;
@@ -178,6 +184,7 @@ void processCommand(){
 
   Serial.print("Processing Command:");
   Serial.print(buffer);
+  Serial.print('\n');
 
   clearDisplay();
 
@@ -209,6 +216,9 @@ void processCommand(){
       cam.write(90);
   } else if(cmd == "CDN"){//Camera DowN
       cam.write(125);
+  } else if(cmd == "ROT"){
+      rotate_real(dir_, spd_, deg_);
+  }
   } else if(cmd == "STP"){
       stopMoving();
   } else {
@@ -216,6 +226,10 @@ void processCommand(){
       lcd.print("Invalid Cmd:");
       setLCDCursor(16);
       lcd.print(buffer);
+
+      Serial.print("Invalid Command: ");
+      Serial.print(buffer);
+      Serial.print('\n');
   }
 
 }
@@ -321,6 +335,18 @@ stopMoving(){
   mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, 1, 0, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
   nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, 1, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
   nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, 1, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+}
+
+void rotate_real(int dir, int spd, long deg){
+  virt_deg = (deg / SPN_DEGS) / 2;
+
+  if(dir){ // CW
+    leftDrive(true, spd, virt_deg);
+    rightDrive(false, spd, virt_deg);
+  } else { // CCW
+    leftDrive(false, spd, virt_deg);
+    rightDrive(true, spd, virt_deg);
+  }
 }
 
 ///////////////////////////// LCD COMMANDS //////////////////////////////
