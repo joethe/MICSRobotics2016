@@ -262,16 +262,16 @@ void
 leftDrive(int dir, int spd, long deg){
 	if(dir){
     if(deg < 0){
-      nxshield.bank_b.motorRunUnlimited(SH_Motor_1, SH_Direction_Reverse, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-      nxshield.bank_b.motorRunUnlimited(SH_Motor_2, SH_Direction_Forward, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_1, SH_Direction_Reverse, spd);
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_2, SH_Direction_Forward, spd);
     } else {
       nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
       nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
     }
 	} else {
     if(deg < 0){
-      nxshield.bank_b.motorRunUnlimited(SH_Motor_1, SH_Direction_Forward, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-      nxshield.bank_b.motorRunUnlimited(SH_Motor_2, SH_Direction_Reverse, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_1, SH_Direction_Forward, spd);
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_2, SH_Direction_Reverse, spd);
     } else {
       nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
       nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
@@ -283,16 +283,16 @@ void
 rightDrive(int dir, int spd, long deg){
 	if(dir){
     if(deg < 0){
-      mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Forward, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  		mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Reverse, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+      mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Forward, spd);
+      mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Reverse, spd);
     } else {
       mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
       mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
     }
 	} else {
     if(deg < 0){
-      mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Reverse, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-      mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Forward, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+      mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Reverse, spd);
+      mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Forward, spd);
     } else {
       mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
       mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
