@@ -71,7 +71,7 @@ void setup(){
   delay(500);
 
   pinMode(6, OUTPUT);
-  
+
   cam.attach(9);
 
   nxshield.init(SH_HardwareI2C);
@@ -138,7 +138,7 @@ void setup(){
 //
 //}
 void loop(){
-  
+
   if(ready){
     processCommand();
     ready = false;
@@ -154,7 +154,7 @@ void loop(){
         }
       }
   }
-  
+
 }
 
 
@@ -171,18 +171,18 @@ void processCommand(){
   String dir;
   String spd;
   String deg;
-  
+
   Serial.print("Processing Command:");
   Serial.print(buffer);
-  
+
   cmd = strtok(buffer, " ");
   spd = strtok(NULL, " ");
   deg = strtok(NULL, " ");
   dir = strtok(NULL, " ");
-  
+
   Serial.print("CMD: ");
   Serial.print(cmd);
-  
+
   int spd_ = spd.toInt();
   long deg_ = StrToFloat(deg);
   int dir_ = dir.toInt();
@@ -211,7 +211,7 @@ void processCommand(){
       clearDisplay();
       lcd.print("WAT?");
   }
- 
+
 }
 
 void motorTest(){
@@ -261,22 +261,42 @@ float StrToFloat(String str){
 void
 leftDrive(int dir, int spd, long deg){
 	if(dir){
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+    if(deg < 0){
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_1, SH_Direction_Reverse, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_2, SH_Direction_Forward, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+    } else {
+      nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+      nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+    }
 	} else {
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-  		nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+    if(deg < 0){
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_1, SH_Direction_Forward, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+      nxshield.bank_b.motorRunUnlimited(SH_Motor_2, SH_Direction_Reverse, spd, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+    } else {
+      nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+      nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+    }
 	}
 }
 
 void
 rightDrive(int dir, int spd, long deg){
 	if(dir){
-  		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+    if(deg < 0){
+      mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Forward, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  		mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Reverse, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+    } else {
+      mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+      mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+    }
 	} else {
-  		mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  		mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+    if(deg < 0){
+      mmx.runUnlimited(MMX_Motor_1, MMX_Direction_Reverse, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+      mmx.runUnlimited(MMX_Motor_2, MMX_Direction_Forward, spd, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+    } else {
+      mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+      mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+    }
 	}
 }
 
@@ -292,17 +312,13 @@ void rotate(int dir, int spd, long deg){
 
 void
 forward(int spd, long deg){
-  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  leftDrive(true, spd, deg);
+  rightDrive(true, spd, deg);
 }
 
 void reverse(int spd, long deg){
-  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Reverse, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Forward, spd, deg, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Forward, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Reverse, spd, deg, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  leftDrive(false, spd, deg);
+  rightDrive(false, spd, deg);
 }
 
 void
@@ -319,11 +335,11 @@ void
 stopMoving(){
   //mmx.runSeconds(MMX_Motor_Both, MMX_Direction_Reverse, 0, 0, MMX_Completion_Dont_Wait, SH_Next_Action_Brake);
   //nxshield.bank_b.motorRunSeconds(SH_Motor_Both, SH_Direction_Reverse, 0, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-  
-  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, 1, 1, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, 1, 1, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, 1, 1, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
-  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, 1, 1, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+
+  mmx.runDegrees(MMX_Motor_1, MMX_Direction_Forward, 1, 0, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  mmx.runDegrees(MMX_Motor_2, MMX_Direction_Reverse, 1, 0, MMX_Completion_Dont_Wait, MMX_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_1, SH_Direction_Reverse, 1, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
+  nxshield.bank_b.motorRunDegrees(SH_Motor_2, SH_Direction_Forward, 1, 0, SH_Completion_Dont_Wait, SH_Next_Action_Brake);
 }
 
 ///////////////////////////// LCD COMMANDS //////////////////////////////
@@ -337,4 +353,3 @@ void setLCDCursor(byte cursor_position){
  lcd.write(0x80); // ready LCD to recieve cursor potition
  lcd.write(cursor_position); // send cursor position
 }
-
