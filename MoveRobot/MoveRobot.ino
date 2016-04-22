@@ -46,7 +46,7 @@ int ypos = 0;
 ///////////////////
 const int UPDATE_DELAY = 50;
 
-const float SPN_DEGS = 0.177;    // Degrees of spin per degree of spin...
+const float SPN_DEGS = 0.119;    // Degrees of spin per degree of spin...
 const float MOV_DEGS = 0.0116;   // Inches of movement per degree
 
 // The shield
@@ -218,7 +218,6 @@ void processCommand(){
       cam.write(125);
   } else if(cmd == "ROT"){
       rotate_real(dir_, spd_, deg_);
-  }
   } else if(cmd == "STP"){
       stopMoving();
   } else {
@@ -338,7 +337,7 @@ stopMoving(){
 }
 
 void rotate_real(int dir, int spd, long deg){
-  virt_deg = (deg / SPN_DEGS) / 2;
+  float virt_deg = (deg / SPN_DEGS);
 
   if(dir){ // CW
     leftDrive(true, spd, virt_deg);
