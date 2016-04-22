@@ -1,4 +1,4 @@
-#include <AbsoluteIMU.h>
+ #include <AbsoluteIMU.h>
 #include <ACCLNx.h>
 #include <AngleSensor.h>
 #include <BaseI2CDevice.h>
@@ -38,9 +38,9 @@ char buffer [32];
 int bIndex = 0;
 boolean ready = false;
 
-//
-// Config Values
-//
+///////////////////
+// Config Values //
+///////////////////
 const int UPDATE_DELAY = 50;
 
 // The shield
@@ -49,36 +49,79 @@ NXShield nxshield;
 //The SERVO with the vision camera on it
 Servo cam;
 
-//
 // Declare the i2c devices used on NXShield(s).
-//
 NXTMMX      mmx(0x0A); // Multiplexer for chain morors
 
 // 2 line LCD on arduino digital pin #6
 SoftwareSerial lcd(2, 5);
 
+//Battery Global//
+float batVolt = 420.0; //if you see this printed, some dank shit's going on.
 
 ///
 /////////// SETUP ///////////////////////////////////////////////
 ///
 
 void setup(){
+  //SERIAL//
   Serial.begin(115200);
+  Serial.print("Setup Starting...");
 
+  //LCD//
   lcd.begin(9600);
   lcd.print("Setup Starting...");
-  Serial.print("Setup Starting...");
   delay(500);
 
+  //PIN//
   pinMode(6, OUTPUT);
-
+  pinMode(3, INPUT_PULLUP);
   cam.attach(9);
 
+  //NX SHIT//
   nxshield.init(SH_HardwareI2C);
+  nxshield.bank_a.motorReset();
+  nxshield.bank_b.motorReset();
 
   // Check battery voltage on startup. Warn if low.
-  float batVolt = (float) nxshield.bank_a.nxshieldGetBatteryVoltage() / 1000;
-  if(batVolt < 7.50) {
+
+
+  while((digitalRead(3) == HIGH) & (checkBattery())) {
+    delay(500);
+    }
+
+  clearDisplay();
+  lcd.print("Press GO!");
+  setLCDCursor(16);
+  lcd.print("voltage: ");
+  lcd.print(batVolt);
+  delay(500);
+
+ // Initialize the i2c sensors.//
+ // OK LOL
+
+ // sensor diagnostic mode. //
+  if(nxshield.getButtonState(BTN_RIGHT)){
+     clearDisplay();
+     beep();
+     lcd.print("Diagnostic Mode!");
+     delay(5000);
+     while(true){
+       delay(UPDATE_DELAY);
+     }
+  }
+// end diagnostics mode //
+
+  Serial.print("Setup Complete...");
+  clearDisplay();
+
+} // end setup
+
+
+
+boolean checkBattery(){
+  batVolt = (float) nxshield.bank_a.nxshieldGetBatteryVoltage() / 1000;
+  boolean goodBatt = (batVolt > 7.50);
+  if(!goodBatt) {
     clearDisplay();
     beep();
     Serial.println("Low Voltage!");
@@ -87,48 +130,14 @@ void setup(){
     setLCDCursor(16);
     lcd.print("voltage: ");
     lcd.print(batVolt);
-  } else {
-    clearDisplay();
-    lcd.print("Press GO!");
-    setLCDCursor(16);
-    lcd.print("voltage: ");
-    lcd.print(batVolt);
   }
-
-  // TODO: Hook up the big red go button to use in place of this.
-  nxshield.waitForButtonPress(BTN_GO);
-
-  nxshield.bank_a.motorReset();
-  nxshield.bank_b.motorReset();
-
-  //
-  // Initialize the i2c sensors.
-  //
-
-  // sensor diagnostic mode.
-  if(nxshield.getButtonState(BTN_RIGHT)){
-     clearDisplay();
-     beep();
-     lcd.print("Diagnostic Mode!");
-     delay(5000);
-
-     while(true){
-       delay(UPDATE_DELAY);
-
-     }
-
-  } // end diagnostics mode
-
-
-  Serial.print("Setup Complete...");
-  clearDisplay();
-
-
-} // end setup
-
-///
-/////////// LOOP ///////////////////////////////////////////////
-///
+  return(goodBatt);
+}
+////////////////////////
+      ////////////
+///////// LOOP /////////
+      ////////////
+////////////////////////
 
 //void loop(){
 //  cam.write(125);
@@ -175,6 +184,8 @@ void processCommand(){
   Serial.print("Processing Command:");
   Serial.print(buffer);
 
+  clearDisplay();
+
   cmd = strtok(buffer, " ");
   spd = strtok(NULL, " ");
   deg = strtok(NULL, " ");
@@ -204,12 +215,12 @@ void processCommand(){
   } else if(cmd == "CDN"){//Camera DowN
       cam.write(125);
   } else if(cmd == "STP"){
-      clearDisplay();
-      lcd.print("STOPPING?!?!?");
       stopMoving();
   } else {
       clearDisplay();
-      lcd.print("WAT?");
+      lcd.print("Invalid Cmd:");
+      setLCDCursor(16);
+      lcd.print(buffer);
   }
 
 }
@@ -229,32 +240,7 @@ void breakTime(){
   clearDisplay();
 }
 
-//////////////////////////// MISC //////////////////////////////////////
 
-// Activates the noise maker
-void beep() {
- digitalWrite(6, HIGH);
- delay(50);
- digitalWrite(6, LOW);
-}
-
-void coloryLights(){
-  nxshield.ledSetRGB(8,0,0); // guessing that this is the red pin...
-  delay(1000);
-  nxshield.ledSetRGB(0,8,0);
-  delay(1000);
-  nxshield.ledSetRGB(0,0,8);
-  delay(1000);
-  nxshield.ledSetRGB(0,0,0);
-  delay(1000);
-}
-
-
-float StrToFloat(String str){
-  char carray[str.length() + 1]; //determine size of the array
-  str.toCharArray(carray, sizeof(carray)); //put str into an array
-  return atof(carray);
-}
 
 /////////////////////////// MOVEMENT COMMANDS //////////////////////////
 
@@ -352,4 +338,32 @@ void setLCDCursor(byte cursor_position){
  lcd.write(0xFE); // ready LCD for special command
  lcd.write(0x80); // ready LCD to recieve cursor potition
  lcd.write(cursor_position); // send cursor position
+}
+
+
+//////////////////////////// MISC //////////////////////////////////////
+
+// Activates the noise maker
+void beep() {
+ digitalWrite(6, HIGH);
+ delay(50);
+ digitalWrite(6, LOW);
+}
+
+void coloryLights(){
+  nxshield.ledSetRGB(8,0,0); // guessing that this is the red pin...
+  delay(1000);
+  nxshield.ledSetRGB(0,8,0);
+  delay(1000);
+  nxshield.ledSetRGB(0,0,8);
+  delay(1000);
+  nxshield.ledSetRGB(0,0,0);
+  delay(1000);
+}
+
+
+float StrToFloat(String str){
+  char carray[str.length() + 1]; //determine size of the array
+  str.toCharArray(carray, sizeof(carray)); //put str into an array
+  return atof(carray);
 }
