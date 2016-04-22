@@ -83,19 +83,19 @@ void setup(){
   nxshield.bank_b.motorReset();
 
   // Check battery voltage on startup. Warn if low.
-  
-  
+
+
   while((digitalRead(3) == HIGH) & (checkBattery())) {
     delay(500);
     }
-    
+
   clearDisplay();
   lcd.print("Press GO!");
   setLCDCursor(16);
   lcd.print("voltage: ");
   lcd.print(batVolt);
   delay(500);
-  
+
  // Initialize the i2c sensors.//
  // OK LOL
 
@@ -108,7 +108,7 @@ void setup(){
      while(true){
        delay(UPDATE_DELAY);
      }
-  } 
+  }
 // end diagnostics mode //
 
   Serial.print("Setup Complete...");
@@ -184,6 +184,8 @@ void processCommand(){
   Serial.print("Processing Command:");
   Serial.print(buffer);
 
+  clearDisplay();
+
   cmd = strtok(buffer, " ");
   spd = strtok(NULL, " ");
   deg = strtok(NULL, " ");
@@ -213,12 +215,12 @@ void processCommand(){
   } else if(cmd == "CDN"){//Camera DowN
       cam.write(125);
   } else if(cmd == "STP"){
-      clearDisplay();
-      lcd.print("STOPPING?!?!?");
       stopMoving();
   } else {
       clearDisplay();
-      lcd.print("WAT?");
+      lcd.print("Invalid Cmd:");
+      setLCDCursor(16);
+      lcd.print(buffer);
   }
 
 }
